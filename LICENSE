@@ -1,0 +1,58 @@
+Artificial Manufactory Subscription License
+Version 1.0, October 2026
+
+Copyright (c) 2026 Derek W (moonixt) / Artificial Manufactory.
+All rights reserved.
+
+1. Ownership
+This repository, including every skill in it, its
+instructions, documentation and any related files (the "Software"), is and
+remains the exclusive property of the copyright holder. No ownership is
+transferred to anyone by this license.
+
+2. Viewing
+The source is published publicly so anyone may read it and evaluate it.
+Reading the Software does not grant any right to use, copy, modify or
+distribute it, except as stated in section 3.
+
+3. Use by subscribers
+A person or company with an active, paid subscription or service agreement
+with Artificial Manufactory (a "Subscriber") may install, use and adapt the
+Software for its own internal purposes while that subscription or agreement
+is active.
+
+4. End of subscription
+When the subscription or agreement ends for any reason, the Subscriber's
+right to use the Software ends at the same time. The Subscriber must stop
+using it and remove it, along with any copies or adaptations, from its
+agents, systems and devices.
+
+5. Restrictions
+Without prior written permission from the copyright holder, no one may:
+  a) resell, sublicense, rent or redistribute the Software, whether modified
+     or not;
+  b) offer the Software, or a service built mainly on it, to third parties;
+  c) remove or alter this license or the copyright notice.
+
+6. Other uses
+Any use not expressly allowed above, including commercial use by
+non-subscribers, requires a separate written license. To request one,
+contact Artificial Manufactory at https://bot.artificialmanufactory.com
+
+7. No warranty
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY ARISING FROM THE USE OF THE SOFTWARE. The
+Software only provides instructions for connecting to third-party services
+(such as Pluggy and Meu Pluggy); the user remains responsible for their
+credentials, their data and compliance with those services' terms.
+
+
+---
+
+Resumo em português (o texto em inglês acima é o que vale):
+O código é de propriedade de Derek W (moonixt) / Artificial Manufactory. Qualquer
+pessoa pode ler. Clientes com assinatura ativa podem usar enquanto a
+assinatura estiver ativa; ao cancelar, o direito de uso acaba e a skill deve
+ser removida. Revenda, redistribuição ou uso comercial por quem não é
+assinante exigem autorização por escrito.
