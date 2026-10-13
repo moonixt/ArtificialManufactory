@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Vídeo motion</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --page: #f5f5f3;
+        --panel: #ffffff;
+        --ink: #0a0a0a;
+        --ink-2: #1f1f1d;
+        --muted: #55554f;
+        --dim: #6f6f69;
+        --line: rgba(0, 0, 0, 0.1);
+        --line-strong: rgba(0, 0, 0, 0.16);
+        --success: #1f8a55;
+        --brand: Georgia, "Times New Roman", serif;
+        --sans: "Inter", Arial, Helvetica, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1350px;
+        overflow: hidden;
+        background: var(--page);
+        color: var(--ink);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Formato: 4:5 (LinkedIn/feed) = height 1350 + inset 120px 96px.
+         9:16 (Reels/TikTok/Shorts) = height 1920 + inset 250px 96px 400px (fora das barras do app).
+         Trocar aqui, no html/body e em var HEIGHT no script. */
+      .scene {
+        position: absolute;
+        inset: 120px 96px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 44px;
+      }
+      [data-in] {
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .big {
+        display: grid;
+        font: 800 150px/0.88 var(--sans);
+        letter-spacing: -0.07em;
+        text-transform: uppercase;
+      }
+      .big.md {
+        font-size: 124px;
+      }
+      .big.sm {
+        font-size: 104px;
+      }
+      /* linhas de título sobem de trás de uma máscara (TRANSITION = "mascara").
+         A folga embaixo (0.18em) é o que deixa Ç e vírgulas inteiros — não diminua. */
+      .big > span {
+        display: block;
+        overflow: hidden;
+        padding: 0.14em 0 0.18em;
+        margin: -0.14em 0 -0.18em;
+      }
+      .big > span > .ln {
+        display: block;
+        will-change: transform;
+      }
+      /* painel que varre a tela na troca de cena */
+      #wipe {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        background: var(--ink);
+        transform: translateY(100%);
+        will-change: transform;
+      }
+      .lede {
+        max-width: 860px;
+        color: var(--muted);
+        font: 500 46px/1.4 var(--sans);
+        letter-spacing: -0.01em;
+      }
+      .tag {
+        align-self: flex-start;
+        padding: 16px 28px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--page);
+        font: 800 28px/1 var(--sans);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      /* Cena 2: lista */
+      .rows {
+        display: grid;
+        border-top: 1px solid var(--line);
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        align-items: baseline;
+        padding: 36px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .row b {
+        color: var(--dim);
+        font: 700 28px/1 var(--sans);
+        letter-spacing: 0.18em;
+      }
+      .row strong {
+        font: 800 72px/0.95 var(--sans);
+        letter-spacing: -0.055em;
+        text-transform: uppercase;
+      }
+
+      /* Cena 3: card do lead no chat */
+      .status {
+        display: inline-flex;
+        align-self: flex-start;
+        align-items: center;
+        gap: 18px;
+        padding: 16px 30px 16px 24px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        color: var(--muted);
+        font: 600 30px/1 var(--sans);
+      }
+      .status i {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--success);
+      }
+      .card {
+        display: grid;
+        gap: 28px;
+        padding: 52px;
+        border: 1px solid var(--line-strong);
+        border-radius: 40px;
+        background: var(--panel);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+      }
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .eyebrow {
+        color: var(--muted);
+        font: 700 26px/1 var(--sans);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+      .eyebrow.ok {
+        color: var(--success);
+      }
+      .lead-name {
+        font: 800 60px/1 var(--sans);
+        letter-spacing: -0.045em;
+      }
+      .why {
+        color: var(--muted);
+        font: 500 34px/1.4 var(--sans);
+      }
+      .why strong {
+        color: var(--ink-2);
+        font-weight: 700;
+      }
+      .bubble {
+        position: relative;
+        padding: 30px 34px;
+        border-radius: 28px 28px 28px 8px;
+        background: var(--page);
+        font: 500 36px/1.42 var(--sans);
+        color: var(--ink-2);
+      }
+      .bubble .ghost {
+        visibility: hidden;
+      }
+      .bubble .typed {
+        position: absolute;
+        inset: 30px 34px;
+      }
+      .caret {
+        display: inline-block;
+        width: 3px;
+        height: 1.05em;
+        margin-left: 2px;
+        vertical-align: -0.15em;
+        background: var(--ink);
+      }
+      .actions {
+        display: flex;
+        gap: 18px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 38px;
+        border-radius: 999px;
+        font: 700 34px/1 var(--sans);
+      }
+      .btn.dark {
+        background: var(--ink);
+        color: var(--page);
+      }
+      .btn.dark.done {
+        background: var(--success);
+      }
+      .btn.ghostbtn {
+        border: 1px solid var(--line-strong);
+        color: var(--ink-2);
+      }
+
+      /* Cena 4: checks */
+      .checks {
+        display: grid;
+        gap: 34px;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 34px;
+        font: 700 68px/1 var(--sans);
+        letter-spacing: -0.045em;
+      }
+      .check i {
+        position: relative;
+        flex: none;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(31, 138, 85, 0.12);
+        box-shadow: inset 0 0 0 2px rgba(31, 138, 85, 0.45);
+      }
+      .check i::before {
+        content: "";
+        position: absolute;
+        left: 19px;
+        top: 20px;
+        width: 26px;
+        height: 14px;
+        border-bottom: 5px solid var(--success);
+        border-left: 5px solid var(--success);
+        transform: rotate(-45deg);
+      }
+
+      /* Cena 5: nichos */
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .pill {
+        padding: 22px 36px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--panel);
+        font: 700 42px/1 var(--sans);
+        letter-spacing: -0.03em;
+      }
+
+      /* Cena 6: CTA */
+      .cta {
+        align-items: center;
+        text-align: center;
+      }
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 22px;
+        padding: 36px 64px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--page);
+        font: 700 52px/1 var(--sans);
+        letter-spacing: -0.02em;
+      }
+      .button svg {
+        width: 46px;
+        height: 46px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .url {
+        color: var(--ink-2);
+        font: 600 44px/1 var(--sans);
+        letter-spacing: -0.01em;
+      }
+      .brand {
+        font: 400 64px/1 var(--brand);
+        letter-spacing: -0.045em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. Gancho -->
+    <section class="scene" data-scene="0 4.2">
+      <h1 class="big">
+        <span data-in="-0.6">Montei um</span>
+        <span data-in="-0.4">agente que</span>
+        <span data-in="-0.2">caça</span>
+        <span data-in="0.3" data-pop>clientes</span>
+      </h1>
+      <p class="lede" data-in="1.4">pra mim, enquanto eu trabalho.</p>
+    </section>
+
+    <!-- 2. O que ele faz -->
+    <section class="scene" data-scene="4.2 10.6">
+      <p class="tag" data-in="4.3">De hora em hora</p>
+      <div class="rows">
+        <div class="row" data-in="4.9"><b>01</b><strong>Acha quem precisa de você</strong></div>
+        <div class="row" data-in="6.2"><b>02</b><strong>Explica por que é uma boa</strong></div>
+        <div class="row" data-in="7.5"><b>03</b><strong>Sugere a abordagem</strong></div>
+      </div>
+    </section>
+
+    <!-- 3. O lead no chat -->
+    <section class="scene" data-scene="10.6 18.4">
+      <p class="status" data-in="10.7"><i id="dot"></i>Agente de leads · agora</p>
+      <div class="card" data-in="11">
+        <div class="card-head">
+          <p class="eyebrow ok">Nova oportunidade</p>
+          <p class="eyebrow">14:00</p>
+        </div>
+        <p class="lead-name" data-in="11.4">Clínica odontológica</p>
+        <p class="why" data-in="11.9">
+          <strong>Por quê:</strong> postou que está perdendo pacientes pela demora em responder no WhatsApp.
+        </p>
+        <p class="eyebrow" data-in="12.6">Abordagem sugerida</p>
+        <div class="bubble" data-in="12.8">
+          <span class="ghost" id="bubble-text">Oi, Ana! Vi seu post sobre a demora no WhatsApp. Montei um agente que responde pacientes na hora. Posso te mostrar em 10 minutos?</span>
+          <span class="typed" data-type="13.1 15.9"></span>
+        </div>
+        <div class="actions" data-in="16.1">
+          <span class="btn dark" id="approve">Aprovar</span>
+          <span class="btn ghostbtn">Ajustar</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Eu decido -->
+    <section class="scene" data-scene="18.4 23.8">
+      <div class="checks">
+        <p class="check" data-in="18.55"><i></i>Eu leio</p>
+        <p class="check" data-in="19.05"><i></i>Ajusto</p>
+        <p class="check" data-in="19.55"><i></i>Decido</p>
+      </div>
+      <h2 class="big sm">
+        <span data-in="20.3">Nada sai</span>
+        <span data-in="20.55">sem minha</span>
+        <span data-in="20.8" data-pop>aprovação.</span>
+      </h2>
+    </section>
+
+    <!-- 5. Virou skill -->
+    <section class="scene" data-scene="23.8 29.4">
+      <p class="tag" data-in="23.9">Virou uma skill</p>
+      <h2 class="big sm">
+        <span data-in="24.15">Instale no</span>
+        <span data-in="24.4">seu agente</span>
+      </h2>
+      <div class="pills">
+        <span class="pill" data-in="25.1" data-pop>Consultoria</span>
+        <span class="pill" data-in="25.35" data-pop>Serviços</span>
+        <span class="pill" data-in="25.6" data-pop>Infoproduto</span>
+        <span class="pill" data-in="25.85" data-pop>Comércio local</span>
+      </div>
+      <p class="lede" data-in="26.6">Você define o cliente ideal. O agente faz a busca.</p>
+    </section>
+
+    <!-- 6. CTA -->
+    <section class="scene cta" data-scene="29.4 35">
+      <h2 class="big md">
+        <span data-in="29.55">Quer um</span>
+        <span data-in="29.8">agente</span>
+        <span data-in="30.05">caçando</span>
+        <span data-in="30.3">clientes?</span>
+      </h2>
+      <p class="button" data-in="30.9" data-pop>
+        Me chama
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </p>
+      <p class="url" data-in="31.4">bot.artificialmanufactory.com</p>
+      <p class="brand" data-in="31.8">Artificial Manufactory</p>
+    </section>
+
+    <div id="wipe"></div>
+
+    <script>
+      // Linha do tempo determinística: render(t) desenha o quadro do segundo t.
+      var DURATION = 35;
+      var HEIGHT = 1350;
+      // "mascara": títulos sobem de trás de máscara, resto revela da esquerda, painel preto varre entre cenas.
+      // "classica": tudo sobe 60px com fade e a cena sai com fade (estilo dos primeiros anúncios).
+      var TRANSITION = "mascara";
+      var APPROVE_AT = 17.2;
+      var scenes = [].slice.call(document.querySelectorAll("[data-scene]")).map(function (el) {
+        var p = el.getAttribute("data-scene").split(" ").map(Number);
+        return { el: el, start: p[0], end: p[1] };
+      });
+      var items = [].slice.call(document.querySelectorAll("[data-in]")).map(function (el) {
+        var scene = el.closest("[data-scene]");
+        var end = scene
+          ? Number(scene.getAttribute("data-scene").split(" ")[1])
+          : Number(el.getAttribute("data-scene-out"));
+        var line = TRANSITION === "mascara" && el.parentElement.classList.contains("big");
+        if (line) el.innerHTML = '<span class="ln">' + el.innerHTML + "</span>";
+        return {
+          el: el,
+          inner: line ? el.firstChild : null,
+          t: Number(el.getAttribute("data-in")),
+          end: end,
+          pop: el.hasAttribute("data-pop"),
+        };
+      });
+      // trocas de cena (todo início de cena menos o primeiro)
+      var cuts = scenes.map(function (sc) { return sc.start; }).filter(function (b) { return b > 0; });
+      var wipe = document.getElementById("wipe");
+      var WIPE = 0.24; // duração de cada metade da varrida
+      var fullText = document.getElementById("bubble-text").textContent;
+      var typers = [].slice.call(document.querySelectorAll("[data-type]")).map(function (el) {
+        var p = el.getAttribute("data-type").split(" ").map(Number);
+        return { el: el, start: p[0], end: p[1] };
+      });
+      var dot = document.getElementById("dot");
+      var approve = document.getElementById("approve");
+      function clamp(x) {
+        return Math.max(0, Math.min(1, x));
+      }
+      function easeOut(x) {
+        return 1 - Math.pow(1 - x, 4);
+      }
+      function backOut(x) {
+        var c = 1.5;
+        return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
+      }
+      function easeInOut(x) {
+        return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+      }
+      function renderClassica(t) {
+        items.forEach(function (it) {
+          var e = easeOut(clamp((t - it.t) / 0.55));
+          var o = clamp((it.end - t) / 0.35);
+          var y = (1 - e) * 60 - (1 - o) * 30;
+          var s = it.pop ? 0.82 + 0.18 * backOut(clamp((t - it.t) / 0.6)) : 1;
+          if (it.pop && t < it.t) s = 0.82;
+          it.el.style.opacity = String(Math.min(e, o));
+          it.el.style.transform = "translateY(" + y.toFixed(2) + "px) scale(" + s.toFixed(4) + ")";
+        });
+      }
+      function renderMascara(t) {
+        items.forEach(function (it) {
+          var e = easeOut(clamp((t - it.t) / 0.6));
+          if (it.inner) {
+            // linha de título: sobe de trás da máscara, sem fade
+            it.el.style.opacity = "1";
+            it.inner.style.transform = "translateY(" + ((1 - e) * 115).toFixed(2) + "%)";
+            return;
+          }
+          // demais: revelam da esquerda pra direita
+          var s = it.pop ? 0.82 + 0.18 * backOut(clamp((t - it.t) / 0.6)) : 1;
+          if (it.pop && t < it.t) s = 0.82;
+          it.el.style.opacity = String(clamp(e * 1.6));
+          it.el.style.clipPath = "inset(-40px " + ((1 - e) * 100).toFixed(2) + "% -40px -40px)";
+          it.el.style.transform = "translateX(" + ((1 - e) * -40).toFixed(2) + "px) scale(" + s.toFixed(4) + ")";
+        });
+        // painel preto cobre a tela antes do corte e sai por cima depois
+        var wy = 100;
+        cuts.forEach(function (b) {
+          if (t >= b - WIPE && t < b) wy = (1 - easeInOut((t - (b - WIPE)) / WIPE)) * 100;
+          else if (t >= b && t < b + WIPE) wy = -easeInOut((t - b) / WIPE) * 100;
+        });
+        wipe.style.transform = "translateY(" + wy.toFixed(2) + "%)";
+      }
+      window.render = function (t) {
+        if (TRANSITION === "mascara") renderMascara(t);
+        else renderClassica(t);
+        scenes.forEach(function (sc) {
+          sc.el.style.visibility = t >= sc.start && t < sc.end ? "visible" : "hidden";
+        });
+        // mensagem sendo digitada
+        typers.forEach(function (ty) {
+          var n = Math.round(fullText.length * clamp((t - ty.start) / (ty.end - ty.start)));
+          var blink = Math.floor(t * 2.2) % 2 === 0;
+          var caret = t < ty.end + 0.6 || blink ? '<span class="caret"></span>' : "";
+          ty.el.innerHTML = fullText.slice(0, n) + (t >= ty.start - 0.3 && t < APPROVE_AT ? caret : "");
+        });
+        // ponto de status "pulsando"
+        dot.style.opacity = (0.55 + 0.45 * Math.abs(Math.sin(t * 2.4))).toFixed(3);
+        // clique em Aprovar
+        var press = clamp((t - APPROVE_AT) / 0.25);
+        var bump = t >= APPROVE_AT ? 1 - 0.08 * Math.sin(Math.PI * press) : 1;
+        approve.style.transform = "scale(" + bump.toFixed(4) + ")";
+        approve.classList.toggle("done", t >= APPROVE_AT + 0.12);
+        approve.textContent = t >= APPROVE_AT + 0.12 ? "Aprovado ✓" : "Aprovar";
+      };
+      window.DURATION = DURATION;
+      window.HEIGHT = HEIGHT;
+      render(0);
+    </script>
+  </body>
+</html>
