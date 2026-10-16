@@ -1,0 +1,12 @@
+[Unit]
+Description=Runs the Linear worker: <SCHEDULE_DESCRIPTION>
+
+[Timer]
+# One OnCalendar line per rule; several lines add up their times.
+# Example, hourly in business hours: OnCalendar=Mon..Fri 08..17:00 America/Sao_Paulo
+<ON_CALENDAR_LINES>
+RandomizedDelaySec=2min
+Persistent=false
+
+[Install]
+WantedBy=timers.target

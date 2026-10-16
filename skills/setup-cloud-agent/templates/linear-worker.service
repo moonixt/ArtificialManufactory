@@ -1,0 +1,17 @@
+[Unit]
+Description=Linear worker: Claude Code takes one issue labeled "<LABEL>" from the <PICKUP_COLUMN> column and opens a PR
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=<USER>
+WorkingDirectory=<WORKER_DIR>
+ExecStart=<WORKER_DIR>/run.sh
+StandardOutput=append:<WORKER_DIR>/worker.log
+StandardError=append:<WORKER_DIR>/worker.log
+# run.sh already limits the session to <MAX> min; this is the safety net.
+TimeoutStartSec=<MAX_PLUS_5>min
+# Stays below production services when competing for CPU and disk.
+Nice=10
+IOSchedulingClass=idle
