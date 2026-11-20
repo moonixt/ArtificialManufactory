@@ -11,6 +11,8 @@ Proprietary agent skills by [Artificial Manufactory](https://bot.artificialmanuf
 | [setup-cloud-agent](skills/setup-cloud-agent/SKILL.md) | Interactive setup that installs linear-worker on this or a remote machine: asks frequency, schedule and Linear API key, then installs a systemd timer. |
 | [linear-worker](skills/linear-worker/SKILL.md) | Unattended Claude Code worker: picks one labeled Linear issue per run, solves it in a git worktree from main and opens a PR for human review. |
 | [connect-your-bank-brazil](skills/connect-your-bank-brazil/SKILL.md) | Free personal Open Finance in Brazil via Meu Pluggy + Pluggy API: connect banks, then read accounts and transactions. |
+| [break](skills/break/SKILL.md) | Break one line or short snippet of code, in any language, into source order, imported tools with official docs, execution order, and the same logic on separate lines. |
+| [break-note](skills/break-note/SKILL.md) | Save a break study note as an Obsidian markdown file in the user's vault (default example path, not a required location). |
 
 ## Install
 
@@ -20,6 +22,8 @@ npx skills add moonixt/ArtificialManufactory --skill connect-your-bank-brazil
 npx skills add moonixt/ArtificialManufactory --skill video-motion-am
 npx skills add moonixt/ArtificialManufactory --skill setup-cloud-agent
 npx skills add moonixt/ArtificialManufactory --skill linear-worker
+npx skills add moonixt/ArtificialManufactory --skill break
+npx skills add moonixt/ArtificialManufactory --skill break-note
 ```
 
 ## License
